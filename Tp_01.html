@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CG_TP01-Denis/Helder</title>
+  <style>
+    html, body { margin: 0; padding: 0; overflow: hidden; }
+  </style>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/96/three.min.js"></script>
+<script src="js/loaders/MTLLoader.js"></script>
+<script src="js/loaders/OBJLoader.js"></script>
+<script src ="js/loaders/ColladaLoader.js"></script>
+
+
+
+<script>
+
+
+  //CLASS OBJECT
+
+  class Obj {
+    constructor(){
+      this.mesh;
+      this.inc = 1;
+    }
+    getMesh() {
+      return this.mesh;
+    }
+  }
+
+  //CLASS CUBE
+  class Cube extends Obj {
+    constructor(size,position) {
+      super();
+      this.geometry = new THREE.BoxGeometry(size.width, size.height, size.depth);
+      this.material = new THREE.MeshLambertMaterial({ color: 0x00ff00 }); // { color: 0x00ff00 }
+      this.mesh = new THREE.Mesh(this.geometry, this.material);
+
+      this.mesh.castShadow = true;
+
+      this.mesh.position.x = position.x;
+      this.mesh.position.y = position.y;
+      this.mesh.position.z = position.z;
+
+    }
+    update() {}
+  }
+
+  //CLASS STRAW
+
+  class CubeTexture extends Cube{
+    constructor(size,position,rotation) {
+      super(size,position);
+      this.geometry = new THREE.BoxGeometry(size.width, size.height, size.depth);
+
+
+      this.tableMaterials=
+        [
+          new THREE.MeshPhongMaterial({ map: new THREE.TextureLoader().load('img/straw3.png'), side : THREE.DoubleSide} ), //Right Side
+          new THREE.MeshPhongMaterial({ map: new THREE.TextureLoader().load('img/straw3.png'), side : THREE.DoubleSide} ), //Left Side
+          new THREE.MeshPhongMaterial({ map: new THREE.TextureLoader().load('img/straw1.png'), side : THREE.DoubleSide} ), //Top Side
+          new THREE.MeshPhongMaterial({ map: new THREE.TextureLoader().load('img/straw1.png'), side : THREE.DoubleSide} ), //Bottom Side
+          new THREE.MeshPhongMaterial({ map: new THREE.TextureLoader().load('img/straw2.png'), side : THREE.DoubleSide} ), //Front Side
+          new THREE.MeshPhongMaterial({ map: new THREE.TextureLoader().load('img/straw2.png'), side : THREE.DoubleSide} ), //Back Side
+        ];
+      this.material = new THREE.MeshFaceMaterial( this.tableMaterials);
+
+
+      this.mesh = new THREE.Mesh(this.geometry, this.material);
+
+      this.mesh.castShadow = true;
+
+
+      this.mesh.position.x = position.x;
+      this.mesh.position.y = position.y;
+      this.mesh.position.z = position.z;
+      this.mesh.rotation.y = rotation.y;
+    }
+  }
+
+  //CLASS TREE
+
+  class Tree extends Obj{
+    constructor(position) {
+      super();
+
+      this.material = new THREE.MeshPhongMaterial( {map: new THREE.TextureLoader().load('img/treetext.jpg'), side : THREE.DoubleSide})
+      this.material1 = new THREE.MeshPhongMaterial( {map: new THREE.TextureLoader().load('img/treetext1.jpg'), side : THREE.DoubleSide})
+      this.trunkMaterial = new THREE.MeshPhongMaterial( {map: new THREE.TextureLoader().load('img/wood1.jpg'), side : THREE.DoubleSide})
+
+      this.mesh  = new THREE.Group()
+      //First Cone
+      const level1 = new THREE.Mesh(
+        new THREE.ConeGeometry(3,6,100),
+        this.material1
+      )
+      level1.position.y = 45
+      level1.castShadow = true;
+
+      //Second Cone
+      const level2 = new THREE.Mesh(
+        new THREE.ConeGeometry(4,7,100),
+        this.material
+      )
+      level2.position.y = 42
+      level2.castShadow = true;
+
+
+      //Third Cone
+      const level3 = new THREE.Mesh(
+        new THREE.ConeGeometry(6,12,100),
+        this.material1
+      )
+      level3.position.y = 38
+      level3.castShadow = true;
+
+      //Fort Cone
+      const level4 = new THREE.Mesh(
+        new THREE.ConeGeometry(8,15,100),
+        this.material
+      )
+      level4.position.y = 32
+      level4.castShadow = true;
+
+      //Fifth Cone
+      const level5 = new THREE.Mesh(
+        new THREE.ConeGeometry(10,19,100),
+        this.material1
+      )
+      level5.position.y = 26
+      level5.castShadow = true;
+
+
+      //Trunk
+      const trunk = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.5,1.5,40),
+        this.trunkMaterial
+      )
+      trunk.castShadow = true;
+
+      this.mesh.add(level1)
+      this.mesh.add(level2)
+      this.mesh.add(level3)
+      this.mesh.add(level4)
+      this.mesh.add(level5)
+      this.mesh.add(trunk)
+
+
+
+      this.mesh.position.x = position.x;
+      this.mesh.position.y = position.y;
+      this.mesh.position.z = position.z;
+
+    }
+    update() {}
+  }
+
+
+  //CLASS FENCE
+  class Fence extends Obj{
+    constructor(position, rotation) {
+      super();
+
+      let woodMaterial = new THREE.MeshPhongMaterial( {map: new THREE.TextureLoader().load('img/wood2.jpg'), side : THREE.DoubleSide})
+      let woodMaterial2 = new THREE.MeshPhongMaterial( {map: new THREE.TextureLoader().load('img/wood3.jpg'), side : THREE.DoubleSide})
+      let woodMaterial3 = new THREE.MeshPhongMaterial( {map: new THREE.TextureLoader().load('img/wood4.jpg'), side : THREE.DoubleSide})
+
+      this.mesh  = new THREE.Group()
+
+      let geometry = new THREE.CylinderGeometry( 3, 3, 10 );
+      let material =  woodMaterial ;
+      let cylinder = new THREE.Mesh( geometry, material );
+      cylinder.scale.set(0.2, 2.08, 0.2);
+      cylinder.position.set(-5.5, 0,0);
+      cylinder.castShadow = true;
+      this.mesh.add(cylinder);
+
+      geometry = new THREE.CylinderGeometry( 3, 3, 10 );
+      cylinder = new THREE.Mesh( geometry, material );
+      cylinder.scale.set(0.2, 2.08, 0.2);
+      cylinder.position.set(5.5, 0,0);
+      cylinder.castShadow = true;
+      this.mesh.add(cylinder);
+
+      geometry = new THREE.BoxGeometry( 10.62, 1, 0.08 );
+      let cube = new THREE.Mesh( geometry, woodMaterial2 );
+      cube.position.set(0, 8.659, 0);
+      cube.castShadow = true;
+      this.mesh.add(cube);
+
+      geometry = new THREE.BoxGeometry( 10.62, 1, 0.08 );
+      let cube1 = new THREE.Mesh( geometry, woodMaterial3 );
+      cube1.position.set(0, 4, 0);
+      cube1.castShadow = true;
+      this.mesh.add(cube1);
+
+
+      this.mesh.position.x = position.x;
+      this.mesh.position.y = position.y;
+      this.mesh.position.z = position.z;
+      this.mesh.rotation.y = rotation.y;
+
+
+    }
+    update() {}
+  }
+
+
+  class House extends Obj{
+
+    constructor(position) {
+      super();
+
+      // Load OBJ + MTL
+      let mtl = new THREE.MTLLoader();
+      mtl.setPath( "models/" );
+      mtl.load( 'WoodenCabinObj.mtl', function( materials ) {
+
+        materials.preload();
+
+        let obj = new THREE.OBJLoader();
+        obj.setMaterials( materials );
+        obj.setPath("models/");
+        obj.load( 'WoodenCabinObj.obj', function ( object ) {
+
+          let mesh = object;
+          mesh.position.x = position.x;
+          mesh.position.y = position.y;
+          mesh.position.z = position.z;
+          mesh.castShadow = true;
+          scene.add( mesh );
+        } );
+
+      } );
+
+    }
+    update() {}
+  }
+
+
+  //CLASS CLOUD RAIN
+  let cloudParticles = [], flash, rain, rainGeo, rainCount = 1500, rainDrop, rainMaterial, cloudMaterial,
+    cloudGeo;
+
+  class Cloud extends Obj {
+    constructor() {
+      super();
+
+      //Rain
+      rainGeo = new THREE.Geometry();
+      for (let i = 0; i < rainCount; i++) {
+        rainDrop = new THREE.Vector3(
+          Math.random() * 400 - 200,
+          Math.random() * 1500 ,
+          Math.random() * 1000 - 500
+        );
+        rainDrop.velocity = {};
+        rainDrop.velocity = 0.05;
+        rainGeo.vertices.push(rainDrop);
+      }
+      rainMaterial = new THREE.PointsMaterial({
+        color: 0xc0c0c0,
+        size: 0.5,
+        transparent: true
+      });
+      rain = new THREE.Points(rainGeo, rainMaterial);
+      scene.add(rain);
+
+      //Cloud
+      let loader = new THREE.TextureLoader();
+      loader.load("img/smoke-1.png", function (texture) {
+
+        cloudGeo = new THREE.PlaneBufferGeometry(1200, 1200);
+        cloudMaterial = new THREE.MeshLambertMaterial({
+          map: texture,
+          transparent: true,
+
+        });
+
+        for (let p = 0; p < 1; p++) {
+          let cloud = new THREE.Mesh(cloudGeo, cloudMaterial);
+          cloud.position.set(
+            Math.random() * 400 - 200,
+            500,
+            Math.random() * 500 - 350,
+          );
+          cloud.rotation.x = 0.9;
+          cloud.rotation.y = -0.2;
+          cloud.rotation.z = Math.random() * 360;
+          cloud.material.opacity = 5.5;
+          cloudParticles.push(cloud);
+          scene.add(cloud);
+        }
+
+      });
+
+    }
+    update()
+    {
+      cloudParticles.forEach(p => {
+        p.rotation.z -=0.0005;
+      });
+      rainGeo.vertices.forEach(p => {
+        p.velocity -= 0.01 + Math.random() * 0.01;
+        p.y += p.velocity;
+        if (p.y < -200) {
+          p.y = 200;
+          p.velocity = 0;
+        }
+      });
+      rainGeo.verticesNeedUpdate = true;
+      rain.rotation.y +=0.002;
+    }
+  }
+
+
+  //CLASS APLICATION
+  let keys={}
+  let renderer, camera, player, scene;
+
+  class Application {
+    constructor() {
+      this.createScene();
+      this.objects = [];
+    }
+
+    createScene() {
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+      let aspect = width / height;
+
+      //Scene
+      scene = new THREE.Scene();
+
+      //Camera
+      camera = new THREE.PerspectiveCamera(75, aspect, 0.5, 1500);
+      camera.position.set(-20, 15, 30);
+
+
+      //Render
+      renderer = new THREE.WebGLRenderer({antialias: true});
+      renderer.setSize(width, height);
+      document.body.appendChild(renderer.domElement);
+
+
+      //SkyBox
+      const tloader = new THREE.CubeTextureLoader();
+      tloader.setPath('img/');
+
+      var textureCube = tloader.load([
+        "nightsky_ft.png",
+        'nightsky_bk.png',
+        'nightsky_up.png',
+        'nightsky_dn.png',
+        'nightsky_rt.png',
+        'nightsky_lf.png',
+
+      ]);
+      scene.background = textureCube;
+
+      //Plane
+      const planeTexture = new THREE.ImageUtils.loadTexture('img/Grass.jpg')
+      planeTexture.wrapS = planeTexture.wrapT = THREE.RepeatWrapping;
+      planeTexture.repeat.set( 50, 50 );
+
+      const planeGeometry = new THREE.PlaneBufferGeometry(1000, 1000, 100,100);
+
+      const planeMaterial = new THREE.MeshPhongMaterial({
+        color: new THREE.Color('#21451b'),
+        specular: new THREE.Color('#122b01'),
+        shininess: 10,
+        bumpMap:  planeTexture
+
+      });
+
+      const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+      plane.rotation.set(-Math.PI / 2, 0, 0);
+      plane.position.set(0,0,0);
+      plane.receiveShadow = true;
+      scene.add(plane);
+
+
+      // Catch resize events
+      addEventListener("resize", () => {
+        width = innerWidth
+        height = innerHeight
+        renderer.setSize(width, height)
+        camera.aspect = width / height
+        camera.updateProjectionMatrix()
+      })
+
+
+      //Light
+
+      renderer.shadowMapEnabled = true;
+      renderer.shadowMapSoft = true;
+
+      let light = new THREE.DirectionalLight(0xf2f3f4);
+      light.position.set(-500,250, 500).normalize(2);
+
+      //Shadow
+      light.castShadow = true;
+      light.shadowDarkness = 0.5;
+      light.shadow.camera.left = -500;
+      light.shadow.camera.right = 500;
+      light.shadow.camera.top = 500;
+      light.shadow.camera.bottom = -500;
+      light.shadow.camera.near = 1;
+      light.shadow.camera.far = 1000;
+      light.shadowCameraVisible = true;
+      light.shadow.mapSize.width = 512; // default is 512
+      light.shadow.mapSize.height = 512; // default is 512
+
+      scene.add(light);
+
+      //Light2
+      let light2 = new THREE.AmbientLight(0xf0f8ff, 0.4);
+      light2.position.set(150, 100, -150).normalize();
+      scene.add(light2);
+
+/*
+      //Axes Helper
+      // show axes in the screen
+      let axes = new THREE.AxesHelper(200);
+      scene.add(axes);
+*/
+
+      //Mouse
+      document.body.addEventListener('mousemove', (event)=>{
+        if (document.pointerLockElement === document.body){
+          camera.rotation.order = 'YZX'
+          let {movementX, movementY} = event
+          let rotateSpeed = 0.0007
+          camera.rotation.y -= movementX * rotateSpeed
+          camera.rotation.x -= movementY * rotateSpeed
+          camera.rotation.x = Math.max(-Math.PI / 2, Math.min(camera.rotation.x, Math.PI / 2))
+          camera.rotation.order = 'XY'
+
+        }
+      })
+
+      document.addEventListener('mousedown', ()=>{
+        document.body.requestPointerLock();
+      })
+
+      document.onkeydown = this.keyDown;
+      document.onkeyup = this.keyUp;
+    }
+
+    keyDown(event) {
+      keys[event.key] = true
+    }
+
+    keyUp(event) {
+      delete keys[event.key]
+    }
+
+    //Update
+    update() {
+      window.dispatchEvent(new CustomEvent('app-update', {}));
+
+      let moveSpeed = 0.5;
+
+      if (keys["w"]) {
+        camera.position.x -= Math.sin(camera.rotation.y) * moveSpeed
+        camera.position.z -= Math.cos(camera.rotation.y) * moveSpeed
+      }
+      if (keys["s"]) {
+        camera.position.x += Math.sin(camera.rotation.y) * moveSpeed
+        camera.position.z += Math.cos(camera.rotation.y) * moveSpeed
+      }
+
+      if (keys["d"]) {
+        camera.position.x += Math.sin(camera.rotation.y + Math.PI/2) * moveSpeed;
+        camera.position.z += Math.cos(camera.rotation.y + Math.PI/2) * moveSpeed;
+      }
+      if (keys["a"]) {
+        camera.position.x -= Math.sin(camera.rotation.y + Math.PI/2) * moveSpeed;
+        camera.position.z -= Math.cos(camera.rotation.y + Math.PI/2) * moveSpeed;
+      }
+
+    }
+
+    //Render the scene with camera
+    render() {
+      renderer.render(scene, camera);
+    }
+
+    add(mesh) {
+      let index;
+      if (Array.isArray(mesh)){
+        for(index in mesh){
+          this.objects.push(mesh[index]);
+          scene.add( mesh[index].getMesh() );
+        }
+      }
+      else{
+        this.objects.push(mesh);
+        scene.add(mesh.getMesh());
+      }
+    }
+
+    loop() {
+
+      requestAnimationFrame(() => this.loop());
+      this.objects.forEach((object) => object.update());
+      this.update();
+      this.render();
+    }
+
+    //Loop Game
+    start() {
+      this.loop();
+    }
+  }
+
+
+  //Objects Input
+
+  let app;
+  window.onload = function() {
+    app = new Application();
+
+    //House
+    app.add(new House({x:75, y:0, z:50}));
+
+    //Trees
+    for(let i=0;i<25;i++){
+      let  objs = new Tree( {x: ((( Math.random() * 1000 - 500 ) /50)*50+25) , y: 0, z:((( Math.random() * 1000 - 500 ) /50)*50+25)})
+      app.add(objs);
+    }
+    //Reference Tree
+    app.add(new Tree({x:0, y:0, z:0}));
+
+    //Fence
+    let fence = [
+      new Fence({x: 30, y: 0, z: 16}, {y: 0}),
+      new Fence({x: 19, y: 0, z: 16}, {y: 0}),
+      new Fence({x: 8, y: 0, z: 16}, {y: 0}),
+      new Fence({x: -3, y: 0, z: 16}, {y: 0}),
+      new Fence({x: -8.6, y: 0, z: 21.5}, {y: 4.7}),
+      new Fence({x: -8.7, y: 0, z: 32.45}, {y: 4.7}),
+      new Fence({x: -8.8, y: 0, z: 43.5}, {y: 4.7}),
+      new Fence({x: 35.4, y: 0, z: 21.5}, {y: 4.7}),
+      new Fence({x: 35.2, y: 0, z: 32.45}, {y: 4.7}),
+      new Fence({x: 35.0, y: 0, z: 43.5}, {y: 4.7}),
+    ];
+    app.add(fence);
+
+    //Straw
+    let straw = [
+      new CubeTexture({width: 10, height:5 , depth: 5},{x:20, y:2, z:20},{y:0}),
+      new CubeTexture({width: 10, height:5 , depth: 5},{x:20, y:2, z:26},{y:0}),
+      new CubeTexture({width: 10, height:5 , depth: 5},{x:20, y:2, z:32},{y:0}),
+      new CubeTexture({width: 10, height:5 , depth: 5},{x:20, y:2, z:38},{y:0}),
+      new CubeTexture({width: 10, height:5 , depth: 5},{x:20, y:7, z:23},{y:0}),
+      new CubeTexture({width: 10, height:5 , depth: 5},{x:20, y:7, z:29},{y:0}),
+      new CubeTexture({width: 10, height:5 , depth: 5},{x:20, y:7, z:35},{y:0}),
+      new CubeTexture({width: 10, height:5 , depth: 5},{x:20, y:12, z:26},{y:0}),
+      new CubeTexture({width: 10, height:5 , depth: 5},{x:20, y:12, z:32},{y:0}),
+      new CubeTexture({width: 10, height:5 , depth: 5},{x:20, y:17, z:29},{y:0}),
+      new CubeTexture({width: 10, height:5 , depth: 5},{x:0, y:2, z:29},{y:10}),
+    ];
+    app.add(straw);
+
+    //Raining Cloud
+    app.add(new Cloud());
+    //app.add(new Cloud());
+
+    //Loop Start
+    app.start();
+
+  }
+
+</script>
+</body>
+</html>
